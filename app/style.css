@@ -1,0 +1,38 @@
+html, body
+{
+    height: 100%;
+    background-color: #fbfbfb;
+}
+
+#board
+{
+    width: 60vh;
+    height: 50vh;
+    background-color: #5497fb;
+}
+
+.cell
+{
+    border-radius: 50%;
+}
+
+.empty
+{
+    background-color: #d5d5d5;
+}
+
+.team1
+{
+    background-color: #ff0000;
+}
+
+.team2
+{
+    background-color: #ffff00;
+}
+
+#teamTurn
+{
+    width: 6vh;
+    height: 6vh;
+}

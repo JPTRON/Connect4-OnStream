@@ -1,0 +1,41 @@
+{
+  "name": "connect4-onstream",
+  "version": "1.0.0",
+  "description": "Connect 4 played by twitch chat.",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JPTRON/Connect4-OnStream.git"
+  },
+  "author": "JPTRON",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JPTRON/Connect4-OnStream/issues"
+  },
+  "homepage": "https://github.com/JPTRON/Connect4-OnStream#readme",
+  "devDependencies": {
+    "electron": "^19.0.8",
+    "electron-builder": "^23.1.0"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dialogs": "^2.0.1",
+    "tmi.js": "^1.8.5"
+  },
+  "build": {
+    "productName": "Connect4-OnStream",
+    "appId": "com.jptron.connect4-onstream.app",
+    "asar": "false",
+    "win": {
+      "target": ["portable"]
+    },
+    "portable": {
+      "artifactName": "connect4-onstream_portable.exe"
+    }
+  }
+}
