@@ -2,9 +2,11 @@ const { ipcRenderer} = require("electron");
 const Dialogs = require('dialogs');
 const dialogs = Dialogs();
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 var rows = document.getElementById("board").getElementsByTagName("tr");
 
-function play()
+async function play()
 {
     var channel = document.getElementById("channel").value;
     var drawTime = document.getElementById("drawTime").value;
@@ -16,16 +18,23 @@ function play()
     }
 
     clear();
+
+    document.getElementById("playButton").disabled = true;
     ipcRenderer.send("startGame", [channel, drawTime]); //Sends a signal to ipcMain
+    await delay(1500);
+    document.getElementById("playButton").disabled = false;
 }
 
 function clear()
 {
-    for(i = 0; i < rows.length; i++)
+    var cells = document.getElementsByClassName("cell");
+
+    for(i = 0; i < cells.length; i++)
     {
-        rows[i].className = "";
-        rows[i].classList.add("empty");
+        cells[i].className = "cell empty";
     };
+
+    document.getElementById("teamTurn").className = "team1";
 }
 
 function fill(cell, team) //Fills the cell by switching classes
@@ -39,7 +48,7 @@ function fill(cell, team) //Fills the cell by switching classes
             rowCells[cell].classList.remove("empty");
             team === 1 ? rowCells[cell].classList.add("team1") : rowCells[cell].classList.add("team2");
 
-            var won = checkVictory(cell, i, rowCells[cell].classList);
+            var won = checkVictory(cell, i, rowCells[cell].classList[1]);
 
             if(won)
             {
@@ -55,17 +64,7 @@ function fill(cell, team) //Fills the cell by switching classes
             }
             
             var teamTurn = document.getElementById("teamTurn");
-
-            if(teamTurn.classList.contains("team1"))
-            {
-                teamTurn.classList.remove("team1");
-                teamTurn.classList.add("team2");
-            }
-            else
-            {
-                teamTurn.classList.remove("team2");
-                teamTurn.classList.add("team1");
-            }
+            teamTurn.className === "team1" ? teamTurn.className = "team2" : teamTurn.className = "team1";
 
             break;
         }
@@ -75,9 +74,11 @@ function fill(cell, team) //Fills the cell by switching classes
 function checkVictory(x, y, team)
 {
     var won = 0;
+    var connected = 1;
+
     var originalX = x;
     var originalY = y;
-    var connected = 1;
+    var originalCell = rows[y].getElementsByTagName("td")[x];
 
     for(d = 0; d < 8; d++) //loops withing 8 directions
     {
@@ -91,34 +92,34 @@ function checkVictory(x, y, team)
             switch(d)
             {
                 case 0:
-                    nextCell = x-i; //left
+                    x = originalX-i; //left
                     break;
                 case 1:
-                    nextCell = x+i; //right
+                    x = originalX+i; //right
                     break;
                 case 2:
-                    y -= 1; //up 
-                    nextCell = x; 
+                    y = originalY - i; //up 
+                    x = originalX; 
                     break;
                 case 3:
-                    y += 1; //down
-                    nextCell = x; 
+                    y = originalY + i; //down
+                    x = originalX; 
                     break;
                 case 4:
-                    y += 1; //down left
-                    nextCell = x-i;
+                    y = originalY + i; //down left
+                    x = originalX-i;
                     break;
                 case 5:
-                    y -= 1; //up right
-                    nextCell = x+i;
+                    y = originalY - i; //up right
+                    x = originalX+i;
                     break;       
                 case 6:
-                    y += 1; //down right
-                    nextCell = x+i;
+                    y = originalY + i; //down right
+                    x = originalX+i;
                     break;    
                 case 7:
-                    y -= 1; //up left
-                    nextCell = x-i;
+                    y = originalY - i; //up left
+                    x = originalX-i;
                     break;            
             }
 
@@ -126,16 +127,19 @@ function checkVictory(x, y, team)
             {
                 var rowCells = rows[y].getElementsByTagName("td");
 
-                if(rowCells[nextCell] && rowCells[nextCell].classList.contains(team)) //checks if the cells has the same color
+                if(rowCells[x] && rowCells[x].classList.contains(team) && rowCells[x] !== originalCell) //checks if the cells has the same color
                 {
-                    currentDirection = "left";
                     connected += 1;
+                }
+                else
+                {
+                    break;
                 }
         
                 if(connected === 4)
                 {
                     won = 1;
-                    break;
+                    return won;
                 }
             }
         }

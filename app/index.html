@@ -15,7 +15,7 @@
     <div class="container">
         Channel: <input type="text" id="channel"> <br>
         Time between draw: <input type="number" min="0" step="1" id="drawTime"> <br>
-        <button onclick="play()">Play</button> <br><br>
+        <button id="playButton" onclick="play()">Play</button> <br><br>
         
         <table id="board">
             <tr>
@@ -75,7 +75,7 @@
         </table>
         <br>
         <table>
-            <tr><td id="teamTurn" class="cell team1"></td> <td>Team's turn</td></tr>
+            <tr><td id="teamTurn" class="team1"></td> <td>Team's turn</td></tr>
         </table>
         <br>
         <p id="playerName"></p>

@@ -11,6 +11,7 @@ var player;
 var players = [];
 var team = 1;
 var played = 0;
+var myTimeout;
 
 const createWindow = () =>  //Creates app's window
 {
@@ -47,7 +48,7 @@ function createClient() //Creates a TMI's client and connects it to the channel
     ({
         channels: [ streamer ]
     });
-    
+
     client.connect();
     drawPlayer();
     listen();
@@ -95,7 +96,13 @@ function getChatters() //Gets all the chatters
 
 function listen() //Listens to the new player's next message
 {
-    var myTimeout = setInterval(function (){drawPlayer();}, drawTime * 1000); //Draws a player each "drawTime" seconds
+    try //Clears previous intervals so it doesn't spam new draws
+    {
+        clearInterval(myTimeout);
+    } 
+    catch (error) {}
+    
+    myTimeout = setInterval(function (){drawPlayer();}, drawTime * 1000); //Draws a player each "drawTime" seconds
 
     client.on('message', (channel, tags, message, self) => 
     {
@@ -129,6 +136,10 @@ ipcMain.on("startGame", async (event, args) => //Listens to the 'start' signal s
 {
     streamer = args[0].toLowerCase();
     drawTime = args[1];
+    player = "";
+    players = [];
+    team = 1;
+    played = 0
 
     createClient();
 });
@@ -141,5 +152,6 @@ ipcMain.on("endTurn", async (event) => //Listens to the 'endTurn' signal so it d
 
 ipcMain.on("victory", async (event) => //Listens to the 'endTurn' signal so it can checks the victory and draw a new player
 {
+    clearInterval(myTimeout);
     client.disconnect();
 });
